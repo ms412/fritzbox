@@ -22,16 +22,31 @@ s.listen(10)
 print('Socket now listening')
 
 # now keep talking with the client
-while 1:
+conn, addr = s.accept()
+print('Connected with ' + addr[0] + ':' + str(addr[1]))
+
+while True:
     # wait to accept a connection - blocking call
-    conn, addr = s.accept()
-    print(    'Connected with ' + addr[0] + ':' + str(addr[1]))
+
+  #  while True:
     time.sleep(10)
-    msg = '28.07.18 19:55:51;RING;0;0041795678728;+4984176290;POTS;\n'
-  #  conn.sendall('28.07.18 19:55:51;RING;0;0041795678728;+4984176290;POTS;\n')
+    msg = '28.07.18 19:55:51;RING;0;004179567872;+4984176290;POTS;\n'
     conn.send(msg.encode())
-    time.sleep(10)
+    time.sleep(5)
+    msg = '28.07.18 19:55:51;RING;0;0041795678728;+4984176290;POTS;\n'
+    conn.send(msg.encode())
+    time.sleep(5)
+    msg = '28.07.18 19:55:51;RING;0;0041795678728;+4984176290;POTS;\n'
+    conn.send(msg.encode())
+    time.sleep(5)
     msg = '28.07.18 19:55:59;DISCONNECT;0;0;\n'
+    conn.send(msg.encode())
+    time.sleep(5)
+    msg = '09.03.14 21:51:56;CALL;0;12;453423;04829401845;SIP0;\n'
+    conn.send(msg.encode())
+    time.sleep(5)
+
+    msg = "09.03.14 21:52:06;CONNECT;0;12;04829401845;\n"
     conn.send(msg.encode())
 
 s.close()

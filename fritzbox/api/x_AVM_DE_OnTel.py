@@ -35,6 +35,7 @@ class x_AVM_DE_OnTel(fb.fb_base):
             self._log.debug('GetPhonebookList %s' % _pbList)
         except:
             self._log.error('Failed to read GetPhonebookList')
+            _pbList = None
 
         return _pbList
 

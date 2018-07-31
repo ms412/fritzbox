@@ -35,33 +35,50 @@ class fb_callmonitor(object):
             self._log.debug('Scucess connecting to %s at port %s'%(host,'1012'))
             threading.Thread(target=self.listen).start()
             self._log.debug("Listening for calls")
-            print('OK')
+          #  print('OK')
 
         except socket.error as e:
             self.connection = None
             self._log.error('Cannot connect to %s at port %s'%(host,'1012'))
-            print('NOK')
+            return False
+           # print('NOK')
+        return True
+
+    def reconnect(self):
+        time.sleep(10)
+        self._log.debug("Reconnect to Server")
+        self.cm_connect('localhost')
+        return True
 
 
     def disconnect(self):
         self.listen_running = False
         self._log.info('Disconnect from Fritzbox')
         self.connection.shutdown(2)
+        return True
 
 
     def listen(self, recv_buffer=4096):
         self.listen_running = True
         buffer = ""
         data = True
-        while (self.listen_running == True):
-            data = self.connection.recv(recv_buffer)
-            buffer += data.decode("utf-8")
+        try:
+          #  print('connect')
+            self._log.info('Connected to Fritzbox Callmonitor')
+            while (self.listen_running == True):
+                data = self.connection.recv(recv_buffer)
+                buffer += data.decode("utf-8")
 
-            while buffer.find("\n") != -1:
-                line, buffer = buffer.split("\n", 1)
-                self._log.debug('Received data %s'% line)
-                self.parser(line)
+                while buffer.find("\n") != -1:
+                    line, buffer = buffer.split("\n", 1)
+                    self._log.debug('Received data %s'% line)
+                    self.parser(line)
 
-            time.sleep(1)
+                time.sleep(1)
+        except:
+            self._log.error('Lost Communication to Call Monitor Server')
+            self.listen_running = False
+            self.disconnect()
+            self.reconnect()
         return
 

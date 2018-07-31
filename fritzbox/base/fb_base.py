@@ -25,7 +25,7 @@ class fb_base(object):
     def connect(self,host, user, passwd):
 
         self._session = fritzconnection.FritzConnection(address=host, port=49000, user=user, password=passwd)
-        print(self._session.call_action('WANCommonInterfaceConfig', 'GetTotalBytesSent')['NewTotalBytesSent'])
+      #  print(self._session.call_action('WANCommonInterfaceConfig', 'GetTotalBytesSent')['NewTotalBytesSent'])
         if not self._session.modelname:
             self._log.error('Cannot connect to Fritzbox')
             return None

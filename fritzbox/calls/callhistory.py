@@ -2,7 +2,7 @@
 import fritzbox.api.x_AVM_DE_OnTel as x_AVM_DE_OnTel
 import json
 
-class caller(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
+class callhistory(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
 
     def _filterCall(self,type):
         _callerList = self.GetCallerList()
