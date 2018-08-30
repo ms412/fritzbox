@@ -40,7 +40,7 @@ class phonebook(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
                             max = value
                             _callerName = _name
                             _callerID = _id
-                            print(max,_callerID,_callerName)
+                           # print(max,_callerID,_callerName)
       #  print('Result',_callerName,_callerID)
 
 
@@ -54,9 +54,10 @@ class phonebook(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
         return(_callerName,_callerID)
 
     def _searchNumber(self, a, b):
+        n = 0
         #   print('input' ,a ,b)
-        #    n, m = len(a), len(b)
-        #    print('len' ,n ,m)
+     #   n, m = len(a), len(b)
+    #    print('len' ,n ,m)
         if len(a) > len(b):
             min = len(b)
         else:
@@ -64,7 +65,7 @@ class phonebook(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
 
         for n in range(1, min):
             # while test:
-            #   print(n)
+        #    print('gg',n)
             ax = a[-n]
             bx = b[-n]
             if ax != bx:

@@ -1,6 +1,7 @@
 
 import fritzbox.api.x_AVM_DE_OnTel as x_AVM_DE_OnTel
 import json
+import logging
 
 class callhistory(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
 
@@ -10,7 +11,7 @@ class callhistory(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
         _outgoing = []
         if _callerList is None:
             self._log.error('Cannot read the CallerList')
-            return json.dups('False')
+            return json.dumps({})
 
         for elem in _callerList.iter("Call"):
    #         print(elem.findall('.//' + 'Type')[0].text)
@@ -32,6 +33,7 @@ class callhistory(x_AVM_DE_OnTel.x_AVM_DE_OnTel):
     def incommingCalls(self):
         _incomming = self._filterCall('1')
     #    print('1INCOMMING',_incomming)
+        logging.debug('Incomming')
         return _incomming
 
     def missedCalls(self):

@@ -60,9 +60,14 @@ class monitorDevice(threading.Thread):
     def monitor(self):
 
         while True:
-            print('active',self._fbox.currentActiveCalls())
-            print('Outgoing', self._fbox.currentActiveOutgoingCalls())
+            print('is connected',self._fbox.isconnected())
+         #   print('active',self._fbox.currentActiveCalls())
+          #  print('Outgoing', self._fbox.currentActiveOutgoingCalls())
             print('PM',self._fbox.getPM())
+            print('link',self._fbox.linkPerformance())
+            _accessIF = self._fbox.accessType()
+            print('Access Interface',_accessIF)
+            print('Monitor', self._fbox.onlineMonitor(_accessIF))
             time.sleep(10)
 
 

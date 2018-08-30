@@ -28,8 +28,14 @@ class fb_base(object):
       #  print(self._session.call_action('WANCommonInterfaceConfig', 'GetTotalBytesSent')['NewTotalBytesSent'])
         if not self._session.modelname:
             self._log.error('Cannot connect to Fritzbox')
-            return None
+            return False
         self._log.info('Connect to %s' % self._session.modelname)
 
         return self._session.modelname
+
+    def isconnected(self):
+        if not self._session.modelname:
+            return False
+
+        return True
 

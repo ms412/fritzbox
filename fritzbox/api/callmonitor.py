@@ -10,16 +10,19 @@ class callmonitor(fb.fb_callmonitor):
         timestamp = time.mktime(datetime.datetime.strptime((line[0]), "%d.%m.%y %H:%M:%S").timetuple())
         if (line[1] == "RING"):
             self._log.debug('Ring %s'%line)
-            self.call_handler({"type": "incoming", "from": line[3], "to": line[4], "device": line[5],"initiated": timestamp, "accepted": None, "closed": None})
+            self.call_handler({"TYPE": "RING", "FROM": line[3], "TO": line[4], "DEVICE": line[5],"DATE": timestamp})
         elif (line[1] == "CALL"):
-            self._log.debug('Call s%'% line)
-            self.call_handler({"type": "outgoing", "from": line[4], "to": line[5], "device": line[6],"initiated": timestamp, "accepted": None, "closed": None})
+            self._log.debug('Call %s'% line)
+            self.call_handler({"TYPE": "OUTGOING", "FROM": line[4], "TO": line[5], "DEVICE": line[6],"DATE": timestamp})
         elif (line[1] == "CONNECT"):
             self._log.debug('Connect %s'% line)
-            self._call_handler({"type": "connect", "from": line[3],"initiated": timestamp})
+            self.call_handler({"TYPE": "CONNECT", "FROM": line[4],"DATE": timestamp})
         elif (line[1] == "DISCONNECT"):
+      #  else:
             self._log.debug('Disconnect %s'% line)
-            self._call_handler({"type": "disconnect", "from": line[3],"initiated": timestamp})
+            self.call_handler({"TYPE": "DISCONNECT", "FROM": line[4],"DATE": timestamp})
+        else:
+            self._log.error('Unknown Message type %s'% line)
 
 
 

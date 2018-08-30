@@ -17,11 +17,11 @@ class x_AVM_DE_OnTel(fb.fb_base):
             #   print('failed to connect')
 
             #  self._log.debug('GetCallerList %s' % r.text)
-            print(url)
+          #  print(url)
             self._log.debug('url %s' % url['NewCallListURL'] + '&max=%s' % (max))
             root = etree.parse(url['NewCallListURL'] + '&max=%s' % (max)).getroot()
         except:
-            print('failed to connect')
+         #   print('failed to connect')
 
             self._log.error('Failed to connect to Fritzbox')
             root = None

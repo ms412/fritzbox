@@ -3,9 +3,9 @@ import json
 
 class callmonitor(callmonitor.callmonitor):
 
-    def __init__(self):
-        print('Callmonitor Object')
-        self._callback = None
+  #  def __init__(self):
+   #     print('Callmonitor Object')
+     #    self._callback = None
 
     def register_callback(self, callback = None):
        # print('e',callback)
@@ -15,7 +15,7 @@ class callmonitor(callmonitor.callmonitor):
         else:
             self._log.debug('Registered Callback handler for call notifications %s' % callback)
             self._callback = callback
-        print(self._callback)
+     #   print(self._callback)
 
     def call_handler(self,notification):
       #  print('test',a)

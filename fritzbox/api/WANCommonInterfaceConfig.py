@@ -27,3 +27,14 @@ class WANCommonInterfaceConfig(fb.fb_base):
         value = self._session.call_action('WANCommonInterfaceConfig', 'GetTotalPacketsReceived')['NewTotalPacketsReceived']
         self._log.debug('GetTotalBytesSent %s' % value)
         return value
+
+    def X_AVM_DE_GetOnlineMonitor(self,_if):
+      #  print(self._session.get_action_arguments('WANCommonInterfaceConfig:1', 'X_AVM-DE_GetOnlineMonitor'))
+        value = self._session.call_action('WANCommonInterfaceConfig', 'X_AVM-DE_GetOnlineMonitor', NewSyncGroupIndex=_if)
+        self._log.debug('X_AVM-DE_GetOnlineMonitor %s' % value)
+        return value
+
+    def GetCommonLinkProperties(self):
+        value = self._session.call_action('WANCommonInterfaceConfig', 'GetCommonLinkProperties')
+        self._log.debug('GetCommonLinkProperties  %s' % value)
+        return value

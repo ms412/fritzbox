@@ -21,281 +21,221 @@ __contact__ = "M.Schiesser@gmail.com"
 __copyright__ = "Copyright (C) 2018 Markus Schiesser"
 __license__ = 'GPL v3'
 
-from configobj import ConfigObj
-#import fritzconnection as fritzbox
-import fritzconnection
-# from library.sr04 import sr04
-<<<<<<< HEAD
-import logging
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-import paho.mqtt.client as mqtt
-import os
-import time
-import sys
-import json
 import fritzbox
-<<<<<<< HEAD
 import threading
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-
-# import io
-# from library.configfile import configfile
-# from library.mqttpush import mqttpush
+import time
+import json
+import os
+import sys
+import logging
+from configobj import ConfigObj
+import paho.mqtt.client as mqtt
 from library.loghandler import loghandler
 
-<<<<<<< HEAD
-#logger = logging.getLogger()
 
-class manager(threading.Thread):
 
-    def __init__(self, configfile='fritzbox2mqtt.cfg'):
+class Fritzmonitor(threading.Thread):
+
+    def __init__(self, configfile):
         threading.Thread.__init__(self)
-=======
 
-class manager(object):
-
-    def __init__(self, configfile='fritzbox2mqtt.cfg'):
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
         self._configfile = configfile
 
-        self._general = None
-        self._mqttbroker = None
+     #   self._log = logging.getLogger('fritzbox')
+      #  fh = logging.FileHandler('/home/tgdscm41/fritzbox/Fritzmonitor.log')
+       # fh.setLevel(logging.DEBUG)
+        #self._log.addHandler(fh)
 
-        self._msg = {}
+        self._fritz = None
 
     def readConfig(self):
-        #   _cfg = configfile(self._configfile)
-        #  _config = _cfg.openfile()
-        _config = ConfigObj(self._configfile)
-<<<<<<< HEAD
-    #    print(_config)
-=======
-        print(_config)
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-        self._logcfg = _config.get('LOGGING', None)
-        self._mqttCfg = _config.get('BROKER', None)
-        self._fboxCfg = _config.get('FRITZBOX', None)
+        #   print('READCONFIG',self._configfile)
+        _cfg = ConfigObj(self._configfile)
+
+        if bool(_cfg) is False:
+            print('ERROR config file not found', self._configfile)
+            sys.exit()
+
+        self._cfg_log = _cfg.get('LOGGING', None)
+        self._cfg_ibox = _cfg.get('FRITZBOX', None)
+        self._mqttCfg = _cfg.get('BROKER', None)
+        # self._cfg_devices = _cfg.get('DEVICES',None)
         return True
 
     def startLogger(self):
-        print('logconfig',self._logcfg)
-<<<<<<< HEAD
-    #    logger = logging.getLogger()
-     #   handler = logging.StreamHandler()
-      #  formatter = logging.Formatter(
-      #      '%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
-       # handler.setFormatter(formatter)
-       # logger.addHandler(handler)
-       # logger.setLevel(logging.DEBUG)
-
-        #self._log = loghandler('FRITZBOX2MQTT')
+     #   print('STart Logger')
+       # self._log = logging.getLogger(__name__)
+        #fh = logging.FileHandler('/home/tgdscm41/fritzbox/Fritzmonitor.log')
+        #fh.setLevel(logging.DEBUG)
+        #self._log.addHandler(fh)
+      #  print(self._cfg_log)
+        _mode = self._cfg_log.get('LOGMODE','PRINT')
         self._log = loghandler()
-=======
-        self._log = loghandler('FRITZBOX2MQTT')
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-        self._log.handle(self._logcfg.get('LOGMODE'), self._logcfg)
+        self._log.handle(method=_mode,config=self._cfg_log)
         return True
 
-    def startFritz(self):
-        _host = self._fboxCfg.get('HOST', '192.168.1.1')
-        _user = self._fboxCfg.get('USER', 'admin')
-        _password = self._fboxCfg.get('PASSWORD', None)
+    def startTR64(self):
+        _host = self._cfg_ibox.get('HOST', '192.168.1.1')
+        _user = self._cfg_ibox.get('USER', 'ms412')
+        _password = self._cfg_ibox.get('PASSWORD', 'Swisscom10')
 
         self._fbox = fritzbox.Fritzbox()
-        self._fbox.connect(_host, _user, _password)
-      #  print('outgoing', self._fbox.outgoingCalls())
+        if not self._fbox.connect(_host, _user, _password):
+            self._log.error('Failed to Connect to Fritzbox %s' % _host)
+            return False
 
-    def getOutgoingCalls(self):
-        _outgoing = json.loads(self._fbox.outgoingCalls())
-       # print('outgoig Cals')
-<<<<<<< HEAD
-        self._log.debug('Outgoing calls %s'% _outgoing)
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-        return _outgoing
-
-    def getMissedCalls(self):
-        _missed = json.loads(self._fbox.missedCalls())
-<<<<<<< HEAD
-        self._log.debug('Missed calls %s'% _missed)
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-        return _missed
-
-    def getIncommingCalls(self):
-        _incomming = json.loads(self._fbox.incommingCalls())
-<<<<<<< HEAD
-        self._log.debug('Incomming calls %s'%  _incomming)
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-        return _incomming
-
-    def getPM(self):
-        _pm = json.loads(self._fbox.getPM())
-<<<<<<< HEAD
-        self._log.debug('PM data %s'% _pm)
-        return _pm
-    
-    def systemInfo(self):
-        return self._fbox.ManufactorName()
-
-   # def curretnCall(self):
-
-=======
-        return _pm
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-
-
-    def mqttPublish(self, topic, data):
-        self._host = str(self._mqttCfg.get('HOST', 'localhost'))
-        self._port = int(self._mqttCfg.get('PORT', 1883))
-        main_channel = str(self._mqttCfg.get('PUBLISH', '/OPENHAB'))
-        self._mqttc = mqtt.Client(str(os.getpid()), clean_session=True)
-
-        #  self._mqttc = mqtt.Client()
-<<<<<<< HEAD
-        try:
-            self._mqttc.connect(self._host, self._port, 60)
-            deviceId = 'FRITZBOX'
-            _topic = main_channel + '/' + deviceId + '/' + topic
-            self._mqttc.publish(_topic, json.dumps(data))
-            self._mqttc.loop(10)
-            self._mqttc.disconnect()
-            self._log.debug('message delivered to mqtt Server')
-        except:
-            self._log.error('Cannot deliver message to mqtt Server')
-
-=======
-        self._mqttc.connect(self._host, self._port, 60)
-
-       # print('Data',data)
-        deviceId = 'FRITZBOX'
-      #  for item in data:
-          #  _item = json.dumps(item)
-         #   print(_item,type(_item),type(item))
-        _topic = main_channel + '/' + deviceId + '/' + topic
-        print(_topic, json.dumps(data))
-        self._mqttc.publish(_topic, json.dumps(data))
-        #    print('cc', _topic, _item)
-        self._mqttc.loop(10)
-
-        self._mqttc.disconnect()
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
         return True
 
-    def filterCalls(self,data):
+    def startCallMonitor(self):
+        _host = self._cfg_ibox.get('HOST', '192.168.1.1')
+        # _host = 'localhost'
+        if self._fbox.cm_connect(_host):
+            self._log.debug('Connected to CallMonitor with success')
+            self._fbox.register_callback(self.callEvent)
+        else:
+            self._log.error('Failed to Connect to Fritzbox CallMonitor Interface Host: %s' % _host)
+            return False
+
+        return True
+
+    def callEvent(self, msg):
+        #  print('callback',msg)
+        _from = msg.get('FROM', 0)
+        # print(_from)
+        _name, _id = self._fbox.LookupName(_from)
+        self._log.debug('Query Name from %s; Name found %s' % (_from, _name))
+        # print('Name',self._fbox.LookupName(_from))
+        msg['NAME'] = _name
+        msg['ID'] = _id
+        self.mqttPublish('CALLMONITOR', msg)
+        return _name
+
+    #  def getPhonebook(self):
+    #     _host =  '192.168.1.1'
+    #    _user = 'tgdscm41'
+    #   _password = 'nd%aG9im'
+
+    #  self._fbox = fritzbox.Fritzbox()
+    # self._fbox.connect(_host, _user, _password)
+
+    #  self._fbox.GetPhoneBook()
+    #    (name,number) = self._fbox.LookupName('841953200')
+    #   print('Name: %s; Number: %s'%(name,number))
+    #  self._fbox.cm_connect('localhost')
+    # self._fbox.register_callback(self.callEvent)
+
+    def getPM(self):
+        return self._fbox.getPM()
+
+    def getCallerList(self):
+        _temp = {}
+        _incomming = self._fbox.incommingCalls()
+        _missed = self._fbox.missedCalls()
+        _outgoing = self._fbox.outgoingCalls()
+        #   print('Outgoing',_outgoing)
+        _temp['INCOMMING'] = json.loads(_incomming)
+        _temp['OUTGOING'] = json.loads(_outgoing)
+        _temp['MISSED'] = json.loads(_missed)
+
+        self._log.debug('getCallerList %s' % (_temp))
+
+        return _temp
+
+    def callFilter(self, data):
         _list = []
-<<<<<<< HEAD
-      #  print('data',data)
-=======
-        print('data',data)
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
+
         for item in data:
+            #  print('xxx',item)
             _templist = {}
-          #  print('xxxxxxxxxxxx',item)
-            _date = item.get('Date','')
-            _name = item.get('Name','')
+            #  print('xxxxxxxxxxxx',item)
+            _date = item.get('Date', '')
+            _name = item.get('Name', '')
             if not _name:
                 _name = 'Unknown'
-            _duration = item.get('Duration','')
+            _duration = item.get('Duration', '')
             _caller = item.get('Caller')
+            _to = item.get('Called')
 
-            #print('lll',_caller)
-<<<<<<< HEAD
             if 'Anrufbeantworter' not in _name:
-            #   print('block')
-           # else:
-=======
-            if 'Anrufbeantworter' in _name:
-                print('block')
-            else:
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-                _templist['DATE']=_date
-                _templist['DURATION']=_duration
-                _templist['NAME']=_name
-                _templist['CALLER'] =_caller
+                #       print('block')
+                #  else:
+                _templist['DATE'] = _date
+                _templist['DURATION'] = _duration
+                _templist['NAME'] = _name
+                _templist['CALLER'] = _caller
+                _templist['TO'] = _to
 
                 _list.append(_templist)
 
-      #  print(_list)
-
         return _list[:5]
 
+    def mqttPublish(self, topic, data):
+        _host = str(self._mqttCfg.get('HOST', 'localhost'))
+        _port = int(self._mqttCfg.get('PORT', 1883))
+        _channel = str(self._mqttCfg.get('PUBLISH', 'OPENHAB'))
+        _deviceId = str(self._mqttCfg.get('DEVICE', 'FRITZBOX'))
+        self._mqttc = mqtt.Client(str(os.getpid()), clean_session=True)
 
+        #   try:
+        self._mqttc.connect(_host, _port, 60)
+        _topic = '/' + _channel + '/' + _deviceId + '/' + topic
+        self._mqttc.publish(_topic, json.dumps(data))
+        #    print(_topic, json.dumps(data))
+        self._mqttc.loop(10)
+        self._mqttc.disconnect()
+        self._log.debug('message delivered to mqtt Server: %s; Topic: %s; Message: %s' % (_host, _topic, data))
+        #  except:
+        #     self._log.error('Cannot deliver message to mqtt Server')
 
+        return True
 
-
-<<<<<<< HEAD
-
-
-=======
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
     def run(self):
+        # print('START')
         self.readConfig()
         self.startLogger()
-        self._log.info('Startup, %s %s %s' % (__app__, __VERSION__, __DATE__))
+        self._log.info('Fritzbox Call Monitor')
+        while not self.startTR64():
+        #    print('X')
+            self._log.debug('Failed to connect to Fritzbox, try again in 10 sec')
+            time.sleep(10)
 
-        self.startFritz()
 
-        while(True):
-            _out = self.getOutgoingCalls()
-            _filter = self.filterCalls(_out)
-<<<<<<< HEAD
-         #   print('OUTGOING',_filter)
-=======
-            print('OUTGOING',_filter)
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-            self.mqttPublish('OUTGOING',_filter)
+     #   print('TEST')
+        time.sleep(10)
+        self.startCallMonitor()
+        time.sleep(10)
 
-            _in = self.getIncommingCalls()
-            _filter = self.filterCalls(_in)
-<<<<<<< HEAD
-          #  print('INCOMMING',_filter)
-=======
-            print('INCOMMING',_filter)
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-            self.mqttPublish('INCOMMING',_filter)
+        _saveTime = time.time() + 1
+        #    print(_saveTime)
+        #    while True:
 
-            _miss = self.getMissedCalls()
-            _filter = self.filterCalls(_miss)
-<<<<<<< HEAD
-           # print('MISSED',_filter)
-            self.mqttPublish('MISSED',_filter)
+        while True:
+            if not self._fbox.isconnected():
+                self._log.error('Lost Connection to fritzbox')
+                self.startTR64()
+                time.sleep(10)
+                self.startCallMonitor()
+                time.sleep(10)
 
-            _pm = self.getPM()
-          #  print('PM',_pm)
-            self.mqttPublish('PM',_pm)
 
-           # print('next')
-            print('ttttttttttttttttttttttt',self.systemInfo())
-=======
-            print('MISSED',_filter)
-            self.mqttPublish('MISSED',_filter)
+            if _saveTime < time.time():
+                _saveTime = time.time() + 300
+                _result = self.getCallerList()
+                for key, item in _result.items():
+                    self.mqttPublish(key, self.callFilter(item))
 
-            _pm = self.getPM()
-            print('PM',_pm)
-            self.mqttPublish('PM',_pm)
+                self.mqttPublish('PM', self.getPM())
 
-            print('next')
->>>>>>> 84b190caa3ce80ee3a7cd07a9ad8cf2891e3854b
-            time.sleep(30)
-       # self._log.info('Startup, %s %s %s' % (__app__, __VERSION__, __DATE__))
-        #  self._log.info('Start Reading Valuse')
-       # data = self.startMeasure()
-       # print('DAten', data)
-      #  self._log.info(data)
-        #  self.publishData(data)
-      #  self.mqttPublish(data)
+            time.sleep(1)
 
 
 if __name__ == '__main__':
+    if len (sys.argv) > 1:
+        _configfile = sys.argv[1]
 
-    if len(sys.argv) == 2:
-        configfile = sys.argv[1]
     else:
-        configfile = './fritzbox2mqtt.cfg'
-
-    mgr_handle = manager(configfile)
-    mgr_handle.run()
+        _configfile = './fritzbox2mqtt.cfg'
+    print(_configfile)
+    fZm = Fritzmonitor(_configfile)
+   # fZm = Fritzmonitor('/home/tgdscm41/fritzbox/Fritzmonitor.cfg')
+    fZm.run()

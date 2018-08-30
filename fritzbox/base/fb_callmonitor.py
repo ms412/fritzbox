@@ -62,23 +62,23 @@ class fb_callmonitor(object):
         self.listen_running = True
         buffer = ""
         data = True
-        try:
-          #  print('connect')
-            self._log.info('Connected to Fritzbox Callmonitor')
-            while (self.listen_running == True):
-                data = self.connection.recv(recv_buffer)
-                buffer += data.decode("utf-8")
+     #   try:
+      #  print('connect')
+        self._log.info('Connected to Fritzbox Callmonitor')
+        while (self.listen_running == True):
+            data = self.connection.recv(recv_buffer)
+            buffer += data.decode("utf-8")
 
-                while buffer.find("\n") != -1:
-                    line, buffer = buffer.split("\n", 1)
-                    self._log.debug('Received data %s'% line)
-                    self.parser(line)
+            while buffer.find("\n") != -1:
+                line, buffer = buffer.split("\n", 1)
+                self._log.debug('Received data %s'% line)
+                self.parser(line)
 
-                time.sleep(1)
-        except:
-            self._log.error('Lost Communication to Call Monitor Server')
-            self.listen_running = False
-            self.disconnect()
-            self.reconnect()
+            time.sleep(1)
+      #  except:
+        self._log.error('Lost Communication to Call Monitor Server')
+        self.listen_running = False
+        self.disconnect()
+        self.reconnect()
         return
 
